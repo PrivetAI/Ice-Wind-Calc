@@ -9,7 +9,7 @@ struct MainInputView: View {
             VStack(spacing: 24) {
                 // Header
                 VStack(spacing: 8) {
-                    Text("Ice Wind Calc")
+                    Text("Ice Fashing Wind Calculator")
                         .font(.system(size: 28, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
                     

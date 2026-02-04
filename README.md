@@ -1,10 +1,10 @@
-# Ice Wind Calc - App Store Content
+# Ice Fashing Wind Calculator - App Store Content
 
 ## Subtitle
 Predict fish feeding zones based on wind patterns
 
 ## Description
-Ice Wind Calc is the ultimate tool for ice anglers who want to find the most productive fishing spots based on wind conditions. Using proven fishing principles, this app analyzes wind direction and strength to predict where fish will be feeding most actively on your lake or pond.
+Ice Fashing Wind Calculator is the ultimate tool for ice anglers who want to find the most productive fishing spots based on wind conditions. Using proven fishing principles, this app analyzes wind direction and strength to predict where fish will be feeding most actively on your lake or pond.
 
 **Key Features:**
 • Interactive wind-based feeding zone predictions
@@ -28,10 +28,10 @@ Wind creates currents, oxygenates water, and pushes food sources to specific are
 **What You Get:**
 Simple wind input, instant zone prediction, and a visual map showing exactly where to drill your holes for maximum success.
 
-Stop wandering on the ice. Ice Wind Calc points you to where the fish are feeding right now.
+Stop wandering on the ice. Ice Fashing Wind Calculator points you to where the fish are feeding right now.
 
 ## Promotional Text
-Find fish faster with wind science! Ice Wind Calc analyzes wind direction and strength to predict active feeding zones on any water body. See visual maps, save historical data, and understand why fish move where they do. Turn wind conditions into your competitive advantage on the ice.
+Find fish faster with wind science! Ice Fashing Wind Calculator analyzes wind direction and strength to predict active feeding zones on any water body. See visual maps, save historical data, and understand why fish move where they do. Turn wind conditions into your competitive advantage on the ice.
 
 ## Keywords
 ice fishing, wind calculator, fish finder, fishing spots, ice fishing app, fishing zones, wind direction, fishing strategy, winter fishing, ice angling, fishing map, fishing tools, lake fishing, fishing calculator, outdoor sports
