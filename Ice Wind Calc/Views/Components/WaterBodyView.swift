@@ -1,4 +1,5 @@
 import SwiftUI
+import Foundation
 
 struct WaterBodyView: View {
     let shape: WaterBodyShape
@@ -73,10 +74,10 @@ struct WaterBodyView: View {
     
     private func windArrowOffset(size: CGFloat) -> CGSize {
         let offset = size * 0.35
-        let angle = (windDirection.degrees + 180 - 90) * .pi / 180
+        let angle = CGFloat((windDirection.degrees + 180 - 90) * .pi / 180)
         return CGSize(
-            width: offset * cos(angle),
-            height: offset * sin(angle)
+            width: offset * CoreGraphics.cos(angle),
+            height: offset * CoreGraphics.sin(angle)
         )
     }
 }
@@ -187,8 +188,6 @@ struct FeedingZonesOverlay: View {
     
     var body: some View {
         GeometryReader { geo in
-            let center = CGPoint(x: geo.size.width / 2, y: geo.size.height / 2)
-            
             // High activity zone (downwind)
             ZoneArc(
                 direction: windDirection.opposite,
@@ -251,15 +250,15 @@ struct WindDirectionArrow: Shape {
         var path = Path()
         let center = CGPoint(x: rect.midX, y: rect.midY)
         let length = min(rect.width, rect.height) / 2
-        let angle = (direction.degrees - 90) * .pi / 180
+        let angle = CGFloat((direction.degrees - 90) * .pi / 180)
         
         let start = CGPoint(
-            x: center.x - length * 0.3 * cos(angle),
-            y: center.y - length * 0.3 * sin(angle)
+            x: center.x - length * 0.3 * CoreGraphics.cos(angle),
+            y: center.y - length * 0.3 * CoreGraphics.sin(angle)
         )
         let end = CGPoint(
-            x: center.x + length * cos(angle),
-            y: center.y + length * sin(angle)
+            x: center.x + length * CoreGraphics.cos(angle),
+            y: center.y + length * CoreGraphics.sin(angle)
         )
         
         path.move(to: start)
@@ -270,12 +269,12 @@ struct WindDirectionArrow: Shape {
         let headAngle: CGFloat = 25 * .pi / 180
         
         let leftHead = CGPoint(
-            x: end.x - headLength * cos(angle - headAngle),
-            y: end.y - headLength * sin(angle - headAngle)
+            x: end.x - headLength * CoreGraphics.cos(angle - headAngle),
+            y: end.y - headLength * CoreGraphics.sin(angle - headAngle)
         )
         let rightHead = CGPoint(
-            x: end.x - headLength * cos(angle + headAngle),
-            y: end.y - headLength * sin(angle + headAngle)
+            x: end.x - headLength * CoreGraphics.cos(angle + headAngle),
+            y: end.y - headLength * CoreGraphics.sin(angle + headAngle)
         )
         
         path.move(to: end)

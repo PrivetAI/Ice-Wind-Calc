@@ -1,4 +1,5 @@
 import SwiftUI
+import Foundation
 
 struct HistoryRowView: View {
     let record: CalculationRecord
@@ -88,11 +89,11 @@ struct MiniWindArrow: View {
                 let h = geo.size.height
                 let center = CGPoint(x: w / 2, y: h / 2)
                 let length = min(w, h) / 2 * 0.8
-                let angle = (direction.degrees - 90) * .pi / 180
+                let angle = CGFloat((direction.degrees - 90) * .pi / 180)
                 
                 let end = CGPoint(
-                    x: center.x + length * cos(angle),
-                    y: center.y + length * sin(angle)
+                    x: center.x + length * CoreGraphics.cos(angle),
+                    y: center.y + length * CoreGraphics.sin(angle)
                 )
                 
                 path.move(to: center)
@@ -102,13 +103,13 @@ struct MiniWindArrow: View {
                 let headAngle: CGFloat = 30 * .pi / 180
                 
                 path.addLine(to: CGPoint(
-                    x: end.x - headLength * cos(angle - headAngle),
-                    y: end.y - headLength * sin(angle - headAngle)
+                    x: end.x - headLength * CoreGraphics.cos(angle - headAngle),
+                    y: end.y - headLength * CoreGraphics.sin(angle - headAngle)
                 ))
                 path.move(to: end)
                 path.addLine(to: CGPoint(
-                    x: end.x - headLength * cos(angle + headAngle),
-                    y: end.y - headLength * sin(angle + headAngle)
+                    x: end.x - headLength * CoreGraphics.cos(angle + headAngle),
+                    y: end.y - headLength * CoreGraphics.sin(angle + headAngle)
                 ))
             }
             .stroke(Color.white, style: StrokeStyle(lineWidth: 1.5, lineCap: .round))
