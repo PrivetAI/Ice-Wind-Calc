@@ -54,8 +54,12 @@ struct ContentView: View {
         let renderer = UIGraphicsImageRenderer(size: size)
         return renderer.image { context in
             let path = shape.path(in: CGRect(origin: .zero, size: size))
-            UIColor.white.setStroke()
-            path.cgPath.copy(strokingWithWidth: 1.5, lineCap: .round, lineJoin: .round, miterLimit: 10).fill()
+            let bezierPath = UIBezierPath(cgPath: path.cgPath)
+            bezierPath.lineWidth = 1.5
+            bezierPath.lineCapStyle = .round
+            bezierPath.lineJoinStyle = .round
+            UIColor.label.setStroke()
+            bezierPath.stroke()
         }
     }
 }
