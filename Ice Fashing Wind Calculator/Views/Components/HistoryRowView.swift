@@ -1,128 +1,96 @@
 import SwiftUI
-import Foundation
 
 struct HistoryRowView: View {
     let record: CalculationRecord
-    
+
     var body: some View {
-        HStack(spacing: 16) {
-            // Mini water body preview
-            WaterBodyView(
-                shape: record.waterBodyShape,
-                windDirection: record.windDirection,
-                windStrength: record.windStrength,
-                showZones: true
-            )
-            .frame(width: 60, height: 50)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 8) {
-                    // Wind direction badge
-                    HStack(spacing: 4) {
-                        MiniWindArrow(direction: record.windDirection)
-                            .frame(width: 14, height: 14)
-                        Text(record.windDirection.shortName)
-                            .font(.system(size: 12, weight: .bold, design: .rounded))
-                    }
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(
-                        Capsule()
-                            .fill(Color(hex: "4A90E2"))
-                    )
-                    
-                    // Wind strength badge
-                    Text(record.windStrength.displayName)
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundColor(Color(hex: "8A9AAC"))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            Capsule()
-                                .fill(Color(hex: "2A3A4C"))
-                        )
-                    
-                    // Shape badge
-                    Text(record.waterBodyShape.displayName)
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundColor(Color(hex: "8A9AAC"))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            Capsule()
-                                .fill(Color(hex: "2A3A4C"))
-                        )
+        HStack(spacing: 14) {
+            // Mini compass indicator
+            MiniCompass(direction: record.windDirection)
+                .frame(width: 38, height: 38)
+
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 6) {
+                    TagPill(text: record.windDirection.shortName, highlight: true)
+                    TagPill(text: record.windStrength.label, highlight: false)
+                    TagPill(text: record.waterBodyShape.label, highlight: false)
                 }
-                
-                Text(record.formattedDate)
-                    .font(.system(size: 13, design: .rounded))
-                    .foregroundColor(Color(hex: "6A7A8C"))
+
+                Text(record.formattedTimestamp)
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundColor(Frost.textSecondary)
             }
-            
+
             Spacer()
-            
-            // Chevron
-            ChevronRight()
-                .stroke(Color(hex: "4A5A6C"), lineWidth: 2)
-                .frame(width: 10, height: 16)
+
+            ThinChevronRight()
+                .stroke(Frost.textSecondary.opacity(0.5), style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round))
+                .frame(width: 7, height: 12)
         }
         .padding(12)
         .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(hex: "151D26"))
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Frost.card)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color(hex: "2A3A4C"), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Frost.border, lineWidth: 0.5)
         )
     }
 }
 
-struct MiniWindArrow: View {
+// MARK: - Mini Compass
+
+private struct MiniCompass: View {
     let direction: WindDirection
-    
+
     var body: some View {
-        GeometryReader { geo in
-            Path { path in
-                let w = geo.size.width
-                let h = geo.size.height
-                let center = CGPoint(x: w / 2, y: h / 2)
-                let length = min(w, h) / 2 * 0.8
-                let angle = CGFloat((direction.degrees - 90) * .pi / 180)
-                
-                let end = CGPoint(
-                    x: center.x + length * CoreGraphics.cos(angle),
-                    y: center.y + length * CoreGraphics.sin(angle)
-                )
-                
-                path.move(to: center)
-                path.addLine(to: end)
-                
-                let headLength: CGFloat = 4
-                let headAngle: CGFloat = 30 * .pi / 180
-                
-                path.addLine(to: CGPoint(
-                    x: end.x - headLength * CoreGraphics.cos(angle - headAngle),
-                    y: end.y - headLength * CoreGraphics.sin(angle - headAngle)
-                ))
-                path.move(to: end)
-                path.addLine(to: CGPoint(
-                    x: end.x - headLength * CoreGraphics.cos(angle + headAngle),
-                    y: end.y - headLength * CoreGraphics.sin(angle + headAngle)
-                ))
-            }
-            .stroke(Color.white, style: StrokeStyle(lineWidth: 1.5, lineCap: .round))
+        ZStack {
+            Circle()
+                .fill(Frost.iceLight)
+            Circle()
+                .stroke(Frost.iceMid, lineWidth: 1)
+
+            // Needle
+            NeedleLine(direction: direction)
+                .stroke(Frost.iceAccent, style: StrokeStyle(lineWidth: 1.5, lineCap: .round))
+
+            Circle()
+                .fill(Frost.iceAccent)
+                .frame(width: 4, height: 4)
         }
     }
 }
 
-struct ChevronRight: Shape {
+private struct NeedleLine: Shape {
+    let direction: WindDirection
+
     func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: 0, y: 0))
-        path.addLine(to: CGPoint(x: rect.width, y: rect.height / 2))
-        path.addLine(to: CGPoint(x: 0, y: rect.height))
-        return path
+        var p = Path()
+        let c = CGPoint(x: rect.midX, y: rect.midY)
+        let r = min(rect.width, rect.height) / 2 * 0.6
+        let angle = CGFloat((direction.angleDegrees - 90) * .pi / 180)
+        p.move(to: c)
+        p.addLine(to: CGPoint(x: c.x + r * CoreGraphics.cos(angle),
+                               y: c.y + r * CoreGraphics.sin(angle)))
+        return p
+    }
+}
+
+// MARK: - Tag Pill
+
+struct TagPill: View {
+    let text: String
+    let highlight: Bool
+
+    var body: some View {
+        Text(text)
+            .font(.system(size: 11, weight: highlight ? .bold : .medium))
+            .foregroundColor(highlight ? .white : Frost.textSecondary)
+            .padding(.horizontal, 7)
+            .padding(.vertical, 3)
+            .background(
+                Capsule().fill(highlight ? Frost.iceAccent : Frost.iceLight)
+            )
     }
 }

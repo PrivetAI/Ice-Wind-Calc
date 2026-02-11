@@ -3,95 +3,99 @@ import SwiftUI
 struct ShapeSelectorView: View {
     @Binding var selectedShape: WaterBodyShape
     @Binding var isPresented: Bool
-    
+
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(spacing: 20) {
-                    Text("Select the shape that matches your fishing spot")
-                        .font(.system(size: 16, design: .rounded))
-                        .foregroundColor(Color(hex: "8A9AAC"))
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 20)
-                        .padding(.top, 10)
-                    
-                    LazyVGrid(columns: [
-                        GridItem(.flexible(), spacing: 16),
-                        GridItem(.flexible(), spacing: 16)
-                    ], spacing: 16) {
+            ZStack {
+                Frost.bg.ignoresSafeArea()
+
+                ScrollView {
+                    VStack(spacing: 14) {
+                        Text("Choose the shape closest to your fishing spot")
+                            .font(.system(size: 14, weight: .regular))
+                            .foregroundColor(Frost.textSecondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.top, 8)
+
                         ForEach(WaterBodyShape.allCases, id: \.self) { shape in
-                            ShapeCard(
-                                shape: shape,
-                                isSelected: selectedShape == shape
-                            )
-                            .onTapGesture {
-                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                    selectedShape = shape
+                            ShapeOptionRow(shape: shape, isChosen: selectedShape == shape)
+                                .onTapGesture {
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        selectedShape = shape
+                                    }
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                                        isPresented = false
+                                    }
                                 }
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                    isPresented = false
-                                }
-                            }
                         }
                     }
                     .padding(.horizontal, 20)
                     .padding(.bottom, 30)
                 }
             }
-            .background(Color(hex: "0A1218").ignoresSafeArea())
-            .navigationTitle("Water Body Shape")
+            .navigationTitle("Water Body")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        isPresented = false
-                    }
-                    .foregroundColor(Color(hex: "4A90E2"))
+                    Button("Done") { isPresented = false }
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundColor(Frost.iceAccent)
                 }
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(.light)
     }
 }
 
-struct ShapeCard: View {
+private struct ShapeOptionRow: View {
     let shape: WaterBodyShape
-    let isSelected: Bool
-    
+    let isChosen: Bool
+
     var body: some View {
-        VStack(spacing: 12) {
-            WaterBodyShape_Drawing(shape: shape)
-                .stroke(isSelected ? Color(hex: "4A90E2") : Color(hex: "4A5A6C"), lineWidth: 2)
-                .background(
-                    WaterBodyShape_Drawing(shape: shape)
-                        .fill(Color(hex: "1A3A5C").opacity(isSelected ? 0.6 : 0.3))
-                )
-                .frame(height: 80)
-                .padding(.horizontal, 10)
-                .padding(.top, 10)
-            
-            VStack(spacing: 4) {
-                Text(shape.displayName)
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .foregroundColor(.white)
-                
-                Text(shape.description)
-                    .font(.system(size: 12, design: .rounded))
-                    .foregroundColor(Color(hex: "6A7A8C"))
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
+        HStack(spacing: 14) {
+            BodyOutline(shape: shape)
+                .fill(Frost.iceLight)
+                .overlay(BodyOutline(shape: shape).stroke(isChosen ? Frost.iceAccent : Frost.border, lineWidth: 1.5))
+                .frame(width: 56, height: 40)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(shape.label)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundColor(Frost.textPrimary)
+                Text(shape.hint)
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundColor(Frost.textSecondary)
             }
-            .padding(.horizontal, 8)
-            .padding(.bottom, 12)
+
+            Spacer()
+
+            SelectionDot(active: isChosen)
+                .frame(width: 22, height: 22)
         }
+        .padding(14)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(hex: "151D26"))
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Frost.card)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(isSelected ? Color(hex: "4A90E2") : Color(hex: "2A3A4C"), lineWidth: isSelected ? 2 : 1)
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(isChosen ? Frost.iceAccent.opacity(0.6) : Frost.border, lineWidth: isChosen ? 1.5 : 0.5)
         )
-        .shadow(color: isSelected ? Color(hex: "4A90E2").opacity(0.3) : .clear, radius: 8)
+    }
+}
+
+private struct SelectionDot: View {
+    let active: Bool
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(active ? Frost.iceAccent : Frost.border, lineWidth: 1.5)
+            if active {
+                Circle()
+                    .fill(Frost.iceAccent)
+                    .padding(5)
+            }
+        }
     }
 }

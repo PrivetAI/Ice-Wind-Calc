@@ -1,59 +1,40 @@
 import SwiftUI
 
-struct PrimaryButton: View {
-    let title: String
+// This file is intentionally minimal. The primary action button is inlined
+// in ContentView to keep the single-page design self-contained.
+// Keeping the file so the Xcode project reference stays valid.
+
+struct FrostActionButton: View {
+    let label: String
+    let enabled: Bool
     let action: () -> Void
-    var isEnabled: Bool = true
-    
+
+    init(_ label: String, enabled: Bool = true, action: @escaping () -> Void) {
+        self.label = label
+        self.enabled = enabled
+        self.action = action
+    }
+
     var body: some View {
         Button(action: action) {
-            Text(title)
-                .font(.system(size: 18, weight: .semibold, design: .rounded))
+            Text(label)
+                .font(.system(size: 15, weight: .semibold))
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
-                .frame(height: 56)
+                .frame(height: 46)
                 .background(
-                    RoundedRectangle(cornerRadius: 16)
+                    RoundedRectangle(cornerRadius: 10)
                         .fill(
                             LinearGradient(
-                                colors: isEnabled ? [Color(hex: "4A90E2"), Color(hex: "357ABD")] : [Color.gray.opacity(0.5), Color.gray.opacity(0.3)],
+                                colors: enabled
+                                    ? [Frost.iceAccent, Frost.iceMid]
+                                    : [Frost.border, Frost.border],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
                         )
                 )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                )
-                .shadow(color: Color(hex: "4A90E2").opacity(isEnabled ? 0.4 : 0), radius: 8, x: 0, y: 4)
         }
-        .disabled(!isEnabled)
-    }
-}
-
-extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let a, r, g, b: UInt64
-        switch hex.count {
-        case 3:
-            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6:
-            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8:
-            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            (a, r, g, b) = (255, 0, 0, 0)
-        }
-        self.init(
-            .sRGB,
-            red: Double(r) / 255,
-            green: Double(g) / 255,
-            blue: Double(b) / 255,
-            opacity: Double(a) / 255
-        )
+        .disabled(!enabled)
     }
 }

@@ -1,4 +1,5 @@
 import Foundation
+import CoreGraphics
 
 enum WindDirection: String, CaseIterable, Codable {
     case north = "N"
@@ -9,25 +10,23 @@ enum WindDirection: String, CaseIterable, Codable {
     case southWest = "SW"
     case west = "W"
     case northWest = "NW"
-    
+
     var displayName: String {
         switch self {
         case .north: return "North"
-        case .northEast: return "Northeast"
+        case .northEast: return "North-East"
         case .east: return "East"
-        case .southEast: return "Southeast"
+        case .southEast: return "South-East"
         case .south: return "South"
-        case .southWest: return "Southwest"
+        case .southWest: return "South-West"
         case .west: return "West"
-        case .northWest: return "Northwest"
+        case .northWest: return "North-West"
         }
     }
-    
-    var shortName: String {
-        return rawValue
-    }
-    
-    var degrees: Double {
+
+    var shortName: String { rawValue }
+
+    var angleDegrees: Double {
         switch self {
         case .north: return 0
         case .northEast: return 45
@@ -39,7 +38,11 @@ enum WindDirection: String, CaseIterable, Codable {
         case .northWest: return 315
         }
     }
-    
+
+    var angleRadians: CGFloat {
+        CGFloat(angleDegrees) * .pi / 180.0
+    }
+
     var opposite: WindDirection {
         switch self {
         case .north: return .south
@@ -52,17 +55,19 @@ enum WindDirection: String, CaseIterable, Codable {
         case .northWest: return .southEast
         }
     }
-    
-    var adjacent: [WindDirection] {
-        switch self {
-        case .north: return [.northEast, .northWest]
-        case .northEast: return [.north, .east]
-        case .east: return [.northEast, .southEast]
-        case .southEast: return [.east, .south]
-        case .south: return [.southEast, .southWest]
-        case .southWest: return [.south, .west]
-        case .west: return [.southWest, .northWest]
-        case .northWest: return [.west, .north]
-        }
+
+    var neighborDirections: [WindDirection] {
+        let all = WindDirection.allCases
+        guard let idx = all.firstIndex(of: self) else { return [] }
+        let prev = all[(idx - 1 + all.count) % all.count]
+        let next = all[(idx + 1) % all.count]
+        return [prev, next]
+    }
+
+    static func nearest(toDegrees deg: Double) -> WindDirection {
+        var normalized = deg.truncatingRemainder(dividingBy: 360)
+        if normalized < 0 { normalized += 360 }
+        let index = Int(((normalized + 22.5) / 45).truncatingRemainder(dividingBy: 8))
+        return allCases[index]
     }
 }

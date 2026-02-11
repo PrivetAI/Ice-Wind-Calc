@@ -1,44 +1,69 @@
 import Foundation
 
 enum WindStrength: String, CaseIterable, Codable {
-    case weak = "weak"
+    case calm = "calm"
+    case light = "light"
     case moderate = "moderate"
     case strong = "strong"
-    case storm = "storm"
-    
-    var displayName: String {
+    case gale = "gale"
+
+    var label: String {
         switch self {
-        case .weak: return "Weak"
+        case .calm: return "Calm"
+        case .light: return "Light"
         case .moderate: return "Moderate"
         case .strong: return "Strong"
-        case .storm: return "Storm"
+        case .gale: return "Gale"
         }
     }
-    
-    var speedRange: String {
+
+    var speedRangeText: String {
         switch self {
-        case .weak: return "1-3 m/s"
-        case .moderate: return "4-7 m/s"
-        case .strong: return "8-14 m/s"
-        case .storm: return "15+ m/s"
+        case .calm: return "0-1 m/s"
+        case .light: return "2-4 m/s"
+        case .moderate: return "5-8 m/s"
+        case .strong: return "9-14 m/s"
+        case .gale: return "15+ m/s"
         }
     }
-    
-    var description: String {
+
+    var briefDescription: String {
         switch self {
-        case .weak: return "Leaves rustle, slight ripples on water"
-        case .moderate: return "Small branches move, small waves form"
-        case .strong: return "Large branches sway, whitecaps appear"
-        case .storm: return "Whole trees move, foam on waves"
+        case .calm: return "Smoke rises vertically, mirror-like water"
+        case .light: return "Gentle breeze, small ripples on surface"
+        case .moderate: return "Steady wind, small waves with crests"
+        case .strong: return "Trees sway, whitecaps common"
+        case .gale: return "Difficult to walk, foam streaks on water"
         }
     }
-    
-    var zoneIntensity: Double {
+
+    var intensityFactor: Double {
         switch self {
-        case .weak: return 0.4
-        case .moderate: return 0.6
-        case .strong: return 0.8
-        case .storm: return 1.0
+        case .calm: return 0.1
+        case .light: return 0.35
+        case .moderate: return 0.55
+        case .strong: return 0.78
+        case .gale: return 1.0
+        }
+    }
+
+    var averageSpeedMps: Double {
+        switch self {
+        case .calm: return 0.5
+        case .light: return 3.0
+        case .moderate: return 6.5
+        case .strong: return 11.5
+        case .gale: return 18.0
+        }
+    }
+
+    var orderIndex: Int {
+        switch self {
+        case .calm: return 0
+        case .light: return 1
+        case .moderate: return 2
+        case .strong: return 3
+        case .gale: return 4
         }
     }
 }

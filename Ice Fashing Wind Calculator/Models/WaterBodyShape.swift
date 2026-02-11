@@ -1,29 +1,29 @@
 import Foundation
 
 enum WaterBodyShape: String, CaseIterable, Codable {
-    case circle = "circle"
-    case oval = "oval"
-    case river = "river"
-    case triangle = "triangle"
-    case irregular = "irregular"
-    
-    var displayName: String {
+    case circular = "circular"
+    case elongated = "elongated"
+    case channel = "channel"
+    case wedge = "wedge"
+    case freeform = "freeform"
+
+    var label: String {
         switch self {
-        case .circle: return "Circle"
-        case .oval: return "Oval"
-        case .river: return "River"
-        case .triangle: return "Triangle"
-        case .irregular: return "Irregular"
+        case .circular: return "Circular"
+        case .elongated: return "Elongated"
+        case .channel: return "Channel"
+        case .wedge: return "Wedge"
+        case .freeform: return "Freeform"
         }
     }
-    
-    var description: String {
+
+    var hint: String {
         switch self {
-        case .circle: return "Round pond or lake"
-        case .oval: return "Oval shaped lake"
-        case .river: return "Long narrow water body"
-        case .triangle: return "Triangular reservoir"
-        case .irregular: return "Complex shoreline"
+        case .circular: return "Round pond or small lake"
+        case .elongated: return "Oval or elliptical lake"
+        case .channel: return "Narrow river or canal"
+        case .wedge: return "Tapered bay or inlet"
+        case .freeform: return "Irregular shoreline"
         }
     }
 }

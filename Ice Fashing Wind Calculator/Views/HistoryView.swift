@@ -1,108 +1,89 @@
 import SwiftUI
 
 struct HistoryView: View {
-    @ObservedObject var viewModel: AppViewModel
-    @Binding var selectedTab: Int
-    
+    @ObservedObject var vm: AppViewModel
+
     var body: some View {
-        VStack(spacing: 0) {
-            // Header
-            VStack(spacing: 8) {
-                Text("History")
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
-                    .foregroundColor(.white)
-                
-                Text("Previous calculations")
-                    .font(.system(size: 16, design: .rounded))
-                    .foregroundColor(Color(hex: "8A9AAC"))
-            }
-            .padding(.top, 20)
-            .padding(.bottom, 16)
-            
-            if viewModel.history.isEmpty {
-                EmptyHistoryView()
-            } else {
-                ScrollView {
-                    LazyVStack(spacing: 12) {
-                        ForEach(viewModel.history) { record in
-                            HistoryRowView(record: record)
-                                .onTapGesture {
-                                    viewModel.selectHistoryRecord(record)
-                                    selectedTab = 1
-                                }
-                                .contextMenu {
-                                    Button(role: .destructive) {
-                                        viewModel.deleteRecord(record)
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-                                }
+        NavigationView {
+            ZStack {
+                Frost.bg.ignoresSafeArea()
+
+                if vm.records.isEmpty {
+                    emptyState
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 10) {
+                            ForEach(vm.records) { record in
+                                HistoryRowView(record: record)
+                                    .onTapGesture { vm.restoreRecord(record) }
+                            }
                         }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 12)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 30)
+                }
+            }
+            .navigationTitle("History")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    if !vm.records.isEmpty {
+                        Button("Clear All") { vm.purgeAllRecords() }
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(Frost.dangerZone)
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") { vm.showHistorySheet = false }
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundColor(Frost.iceAccent)
                 }
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(hex: "0A1218").ignoresSafeArea())
+        .preferredColorScheme(.light)
     }
-}
 
-struct EmptyHistoryView: View {
-    var body: some View {
-        VStack(spacing: 20) {
+    private var emptyState: some View {
+        VStack(spacing: 16) {
             Spacer()
-            
-            // Empty state icon
+
             ZStack {
                 Circle()
-                    .fill(Color(hex: "1E2A38"))
-                    .frame(width: 100, height: 100)
-                
-                EmptyClockIcon()
-                    .stroke(Color(hex: "4A5A6C"), lineWidth: 2)
-                    .frame(width: 50, height: 50)
+                    .fill(Frost.iceLight)
+                    .frame(width: 80, height: 80)
+                EmptyListIcon()
+                    .stroke(Frost.textSecondary.opacity(0.4), style: StrokeStyle(lineWidth: 1.5, lineCap: .round))
+                    .frame(width: 36, height: 36)
             }
-            
-            VStack(spacing: 8) {
-                Text("No calculations yet")
-                    .font(.system(size: 20, weight: .semibold, design: .rounded))
-                    .foregroundColor(.white)
-                
-                Text("Your calculations will appear here\nafter you analyze feeding zones")
-                    .font(.system(size: 15, design: .rounded))
-                    .foregroundColor(Color(hex: "6A7A8C"))
-                    .multilineTextAlignment(.center)
-            }
-            
+
+            Text("No records yet")
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundColor(Frost.textPrimary)
+
+            Text("Analyses you run will appear here\nso you can revisit them later.")
+                .font(.system(size: 14, weight: .regular))
+                .foregroundColor(Frost.textSecondary)
+                .multilineTextAlignment(.center)
+
             Spacer()
         }
         .padding(.horizontal, 40)
     }
 }
 
-struct EmptyClockIcon: Shape {
+// MARK: - Empty icon
+
+private struct EmptyListIcon: Shape {
     func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let center = CGPoint(x: rect.midX, y: rect.midY)
-        let radius = min(rect.width, rect.height) / 2
-        
-        // Circle
-        path.addEllipse(in: CGRect(
-            x: center.x - radius,
-            y: center.y - radius,
-            width: radius * 2,
-            height: radius * 2
-        ))
-        
-        // Clock hands
-        path.move(to: center)
-        path.addLine(to: CGPoint(x: center.x, y: center.y - radius * 0.5))
-        
-        path.move(to: center)
-        path.addLine(to: CGPoint(x: center.x + radius * 0.35, y: center.y + radius * 0.1))
-        
-        return path
+        var p = Path()
+        let w = rect.width
+        let h = rect.height
+        // Simple lined-paper icon
+        p.addRoundedRect(in: CGRect(x: 2, y: 0, width: w - 4, height: h), cornerSize: CGSize(width: 4, height: 4))
+        p.move(to: CGPoint(x: w * 0.25, y: h * 0.35))
+        p.addLine(to: CGPoint(x: w * 0.75, y: h * 0.35))
+        p.move(to: CGPoint(x: w * 0.25, y: h * 0.55))
+        p.addLine(to: CGPoint(x: w * 0.65, y: h * 0.55))
+        return p
     }
 }
